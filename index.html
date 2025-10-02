@@ -38,28 +38,31 @@
         const pin = $("#pin").val();
         const idNo = $("#idNo").val();
 
+        // --- Paso 1: Ejecutar AddUser ---
         axios.post("https://andenes.terminal-calama.com/TerminalCalama/PHP/Restroom/addUser.php", { pin, idNo })
           .then(res => {
-            $("#responseBox")
-              .removeClass("d-none alert-danger")
-              .addClass("alert-success")
-              .html("<b>Éxito:</b> " + (res.data.success || JSON.stringify(res.data)));
-          })
-          .catch(err => {
-            console.error(err);
-            $("#responseBox")
-              .removeClass("d-none alert-success")
-              .addClass("alert-danger")
-              .html("<b>Error:</b> " + (err.response?.data?.error || err.message));
-          });
-      });
+            if (res.data.success) {
+              // Mostrar mensaje de AddUser
+              $("#responseBox")
+                .removeClass("d-none alert-danger")
+                .addClass("alert-success")
+                .html("<b>Éxito AddUser:</b> " + res.data.success);
 
-              axios.post("https://andenes.terminal-calama.com/TerminalCalama/PHP/Restroom/addLevelUser2.php", { pin })
-          .then(res => {
-            $("#responseBox")
-              .removeClass("d-none alert-danger")
-              .addClass("alert-success")
-              .html("<b>Éxito:</b> " + (res.data.success || JSON.stringify(res.data)));
+              // --- Paso 2: Ejecutar AddLevelUser2 solo si AddUser fue exitoso ---
+              return axios.post("https://andenes.terminal-calama.com/TerminalCalama/PHP/Restroom/addLevelUser2.php", { pin, idNo });
+            } else {
+              throw new Error(res.data.error || "Error desconocido en AddUser");
+            }
+          })
+          .then(res2 => {
+            if (res2.data.success) {
+              $("#responseBox")
+                .removeClass("d-none alert-danger")
+                .addClass("alert-success")
+                .append("<br><b>Éxito AddLevelUser2:</b> " + res2.data.success);
+            } else {
+              throw new Error(res2.data.error || "Error desconocido en AddLevelUser2");
+            }
           })
           .catch(err => {
             console.error(err);
