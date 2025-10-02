@@ -53,6 +53,22 @@
               .html("<b>Error:</b> " + (err.response?.data?.error || err.message));
           });
       });
+
+              axios.post("https://andenes.terminal-calama.com/TerminalCalama/PHP/Restroom/addLevelUser2.php", { pin })
+          .then(res => {
+            $("#responseBox")
+              .removeClass("d-none alert-danger")
+              .addClass("alert-success")
+              .html("<b>Éxito:</b> " + (res.data.success || JSON.stringify(res.data)));
+          })
+          .catch(err => {
+            console.error(err);
+            $("#responseBox")
+              .removeClass("d-none alert-success")
+              .addClass("alert-danger")
+              .html("<b>Error:</b> " + (err.response?.data?.error || err.message));
+          });
+      });
     });
   </script>
 </body>
